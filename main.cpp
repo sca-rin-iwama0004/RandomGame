@@ -1,62 +1,106 @@
 #include <iostream>
-#include<cstdlib>
-#include <ctime>
 #include <string>
+
 using namespace std;
 
-int main() {
-int count = 0;
-  int a;
-  string name;
-  string me;
-  string you;
-  int draw = 0;
-  int win = 0;
-  int lose = 0;
+class Player
+{
+public:
+	Player(const string& name = " ");
+	string GetName() const;
+	Player* GetNext() const;
+	void SetNext(Player* next);
+	
+private:
+	string m_Name;
+	// 次のプレイヤ
+	Player* m_pNext;	
+};
 
- cout << "じゃんけん5回勝負" << endl;  
- cout << "名前を入力してください" << endl;
-  cin >> name;
-  
-  do{
-     cout << "何を出す？(1:グー 2:チョキ 3:パー)" << endl;
-     cin >> a;
-    
-    if(a < 1 || a >= 4){
-      cout << "もう一度考えよう" << endl;
-      
-      }
-    
-  srand(static_cast<unsigned int>(time(0)));
-  int randomNumber = rand();
-  int b = (randomNumber % 3) + 1;
-  if (b == 1)
-    you = "グー";
-  else if (b == 2)
-    you= "チョキ";
-  else if (b == 3)
-    you == "パー";
-  
-   cout << "じゃんけんぽん" << endl;
-   if(a == 1)
-     me = "グー";
-  else if(a == 2)
-     me = "チョキ";
-   else if(a == 3)
-     me = "パー";
-    cout << name << "：" << me << endl;
-    cout << "相手：" << you << endl;
+Player::Player(const string& name):
+	m_Name(name),
+	//ヌルポインタ
+	m_pNext(0)			
+{}
 
-if(a == b){
-  draw++;
-}else if(a == 1 && b == 2 || a == 2 && b == 3 ||
-  a == 3 && b == 1){
-  win++;
-}else{
-  lose++;
+string Player::GetName() const
+{
+	return m_Name;
 }
-    count++;
-    }while(count < 5);
 
-    cout << "結果は勝ち:"<<win <<"負け"<<lose<<"引き分け"<<draw<<"です"<< endl;
+Player* Player::GetNext() const
+{
+	return m_pNext;
 }
+
+void Player::SetNext(Player* next)
+{
+	m_pNext = next;
+}
+
+class Lobby
+{
+	friend ostream& operator<<(ostream& os, const Lobby& aLobby);
+	
+public:
+	Lobby();
+	~Lobby();
+	void AddPlayer();
+	void RemovePlayer();
+	void Clear();
+	
+private:
+	Player* m_pHead;//プレイヤーリスト
+};
+
+Lobby::Lobby():
+	//ヌルポインタ
+	m_pHead(0)			
+{}
+
+Lobby::~Lobby()
+{
+	Clear();
+}
+
+void Lobby::AddPlayer()//プレイヤーの追加
+{
+	//新しいプレイヤノードを作成
+	cout << "Please enter a name of the new player: ";
+	string name;
+	cin >> name;
+	Player* pNewPlayer = new Player(name);
+	
+	//リストは空っぽの状態だと、新しいプレイヤがリストの最初の項目となる
+	// if list is empty, make head of list this new player
+	if (m_pHead == 0)
+	{
+		m_pHead = pNewPlayer;
+	}
+	//　ではなければリストの最終項目に追加する
+	// otherwise find the end of the list and add the player there
+	else
+	{
+		Player* pIter = m_pHead;
+		while (pIter->GetNext() != 0)
+		{
+			pIter = pIter->GetNext();
+		}
+		pIter->SetNext(pNewPlayer);
+	}
+}
+
+void Lobby::RemovePlayer()
+{
+	if (m_pHead == 0)//プレイヤーリストが0だったら
+	{
+		//ゲームロビーには誰もいません。削除することができません。
+		cout << "The game lobby is empty.	No one to remove!\n";
+	}
+	else
+	{
+    //リストの一番最初のプレイヤーを削除
+		Player* pTemp = m_pHead;
+		m_pHead = m_pHead->GetNext();
+		delete pTemp;
+	}
