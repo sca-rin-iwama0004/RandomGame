@@ -104,3 +104,71 @@ void Lobby::RemovePlayer()
 		m_pHead = m_pHead->GetNext();
 		delete pTemp;
 	}
+}
+
+void Lobby::Clear()//ロビーを空にする
+{
+	while (m_pHead != 0)//プレイヤーリストが0になるまで
+	{
+		RemovePlayer();
+	}
+}
+
+ostream& operator<<(ostream& os, const Lobby& aLobby)
+{
+	Player* pIter = aLobby.m_pHead;
+	//現在のゲームロビーにいるプレイヤリスト：
+	os << "\nHere's who's in the game lobby:\n";
+	if (pIter == 0)//プレイヤーが0だったら
+	{
+		//ゲームロビーには誰もいません。
+		os << "The lobby is empty.\n";
+	}
+	else
+	{
+		while (pIter != 0)
+		{
+			os << pIter->GetName() << endl;
+			pIter = pIter->GetNext();
+		}
+	}
+	
+	return os;
+}
+
+int main()
+{
+	Lobby myLobby;
+	int choice;
+	
+	do
+	{
+		cout << myLobby;
+		//ゲームロビー
+		cout << "\nGAME LOBBY\n";
+		//プログラムを終了
+		cout << "0 - Exit the program\n";
+		//ゲームロビーにプレイヤを追加
+		cout << "1 - Add a player to the lobby\n";
+		//ゲームロビーからプレイヤを削除
+		cout << "2 - Remove a player from the lobby\n";
+		//ゲームロビーをクリアする
+		cout << "3 - Clear the lobby\n";
+		//選択を入力
+		cout << endl << "Enter a choice: ";
+		cin >> choice;
+		
+		switch (choice)
+		{
+			//さようなら
+			case 0: cout << "Good-bye\n"; break;
+			case 1: myLobby.AddPlayer(); break;
+			case 2: myLobby.RemovePlayer(); break;
+			case 3: myLobby.Clear(); break;
+				//不正入力をしました
+			default: cout << "That was not a valid choice\n";
+		}
+	} while (choice != 0);
+	
+	return 0;
+}
